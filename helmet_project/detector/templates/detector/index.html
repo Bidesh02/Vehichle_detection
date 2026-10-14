@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Detection System</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: #f0f2f5; 
+            text-align: center; 
+            color: #333; 
+            padding: 40px 20px; 
+        }
+        .card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            max-width: 650px; 
+            margin: auto; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        .btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 12px 28px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        .btn:hover { 
+            background: #0056b3; 
+        }
+        .media-container {
+            margin-top: 25px;
+        }
+        .media-container img, .media-container video { 
+            max-width: 100%; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        .loading {
+            display: none;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2> Vehcile Detection</h2>
+        <p>Upload an <strong>Image</strong> or a <strong>Video</strong> (.mp4, .avi, .mov)</p>
+        
+        <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+            {% csrf_token %}
+            <input type="file" name="media" accept="image/*,video/*" required>
+            <br>
+            <button type="submit" id="submitBtn" class="btn">Upload & Detect</button>
+        </form>
+
+        <div id="loadingText" class="loading">
+            ⏳ Processing media... Please wait while YOLO detects  frame by frame.
+        </div>
+
+        {% if detected_url %}
+            <div class="media-container">
+                <h3>Detection Result:</h3>
+                {% if is_video %}
+                    <video controls autoplay muted playsinline width="100%">
+                        <source src="{{ detected_url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% else %}
+                    <img src="{{ detected_url }}" alt="Detected Image">
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loadingText').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerText = 'Processing...';
+        }
+    </script>
+</body>
+</html>
